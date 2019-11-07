@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: av-client-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: av-client
+  template:
+    metadata:
+      labels:
+        app: av-client
+    spec:
+      containers:
+      - image: frickler24/av-client:latest
+        imagePullPolicy: Always
+        name: av-client-container
+        env:
+        #- name: HOST
+        #  value: "192.168.1.10"
+        #- name: PORT
+        #  value: "30000"
+        - name: TEAM
+          value: "A"
+        - name: MEMBER
+          value: "Fritz"

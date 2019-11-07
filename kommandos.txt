@@ -1,0 +1,71 @@
+# Installieren autocompletion für kubectl und .zshrc!
+source <(kubectl completion bash)
+
+# auf älteren Knoden lsof installieren:
+# sudo apt update && sudo apt install lsof
+
+# Von alter kubeadm-Installation binaries entfernen
+sudo rm -f /usr/bin/{kubectl,crictl,ctr}
+
+# Installiere den k3s Service
+# ct.de/ya59
+# WICHTIGER HINWEIS: https://github.com/rancher/k3s/issues/970
+# https://www.crisp-research.com/kubernetes-distribution-k3s-container-computing-meets-iot/
+# https://medium.com/@yannalbou/k3d-k3s-k8s-perfect-match-for-dev-and-testing-896c8953acc0
+
+# Wenn nicht über docker sondern über den Standard containerd gegangen werden soll, 
+# einfach die Option weglassen
+curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644 # --docker
+
+# Nun in zweitem Fenster ein "Pod-Monitoring" starten
+watch -n 0.5 sudo k3s kubectl get pods --all-namespaces
+
+# Warte ein Weilchen, dann schau nach, ob Dein Server existiert
+kubectl get node -o wide
+
+kubectl cordon bigengine
+
+# Ermitteln des Verbindungs-Tokens
+sudo cat /var/lib/rancher/k3s/server/node-token
+
+# Wegen des merkwürdigen LB-Verhaltens 
+# setzen wir den Clustermanager auf non-dispathable
+kubectl cordon MASCHINENNAME 
+
+# Nun hänge andere Knoten an den Cluster
+# Dazu müssen wir erst mal die Token- und Adressinformation bereitstellen
+# Die folgenden drei Zeilen (um das Token ergänzt) auf der Webseite eintragen,
+# damit die Kollegen das kopieren können:
+
+export K3S_URL=https://192.168.1.11:6443
+# export K3S_TOKEN=HIER_KOMMT_DAS_TOKEN_HIN_IN_DIE_NÄCHSTE_ZEILE
+export K3S_TOKEN=K10492c0a4b53b2bada254e286ca22da67c3ed8fdaa4d529455d1c0a6102c80dbb9::node:351b7c7ba17ae19dcbbb8fdbd7278694
+
+# curl -sfL https://get.k3s.io | sh -
+curl -sfL https://get.k3s.io | sh -s - --docker
+
+# Nicht wichtig, aber damit es schön aussieht
+# Setzen der Rolle bei den Workern (Liste aktualisieren!)
+WORKER="pi2 pi7 pi8 pi4 pi3"
+for i in $WORKER ; do kubectl label node $i node-role.kubernetes.io/worker=superworker --overwrite; done
+
+# Nun das erste Deployment mit Service deployen:
+sudo k3s kubectl apply -f whoami.yaml
+
+# Und nachschauen, was passiert ist:
+k get svc
+k get svc whoami-service -o wide
+k get po -l app=whoami
+
+# mal was davon aufrufen
+# ACHTUNG: localhost wird vom LB zurückgewiesen, 
+bitte auch nicht auf den Controller gehen (langsam)
+curl 192.168.21.77:30123
+
+# Eine nette Übersicht, wie man die langen Ressourcennamen abkürzen kann
+kubectl api-resources # -o wide
+
+# Die Mandelbrotseite sckalieren lassen
+scale --replicas=1 deployments phpngx-deployment
+
+

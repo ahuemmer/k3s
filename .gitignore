@@ -1,0 +1,6 @@
+output_läuft
+script
+service.whoami.yaml
+wegdamit.sh
+whoami.yaml
+/www/**
