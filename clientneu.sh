@@ -5,6 +5,9 @@ set +e
 clients() {
 	echo "Starten der Worker auf den Clients"
 	set +x
+	sudo dphys-swapfile swapoff
+	sudo dphys-swapfile uninstall
+
 	if [[ -x /usr/local/bin/k3s-agent-uninstall.sh ]]; then
 		k3s-agent-uninstall.sh
 	else

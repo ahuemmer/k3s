@@ -6,6 +6,7 @@
 ssh -X pi1 geany vorbereitung.sh
 
 # und hier geht es nun los
+git clone https://github.com/frickler24/k3s
 
 # Kopieren der wichtigsten Dinge
 # Der Quellrechner
@@ -16,7 +17,7 @@ scp -r ${QUELLE}:.ssh .
 
 # Vor den nächsten Zeilen abwarten, 
 # denn durch die Temrinaleingabe verschwinden die weiteren Pastes...
-scp -r ${QUELLE}:k3s .
+# scp -r ${QUELLE}:k3s .
 scp ${QUELLE}:.bash{rc,_aliases} .
 source ~/.bashrc
 scp ${QUELLE}:.zshrc .
@@ -33,7 +34,6 @@ yes | ssh bigengine echo ok
 sudo dphys-swapfile swapoff
 sudo dphys-swapfile uninstall
 sudo apt update && sudo apt upgrade -y
-reboot
 
 # Vor den nächsten Zeilen abwarten wegen reboots
 # Installation Docker
@@ -54,4 +54,9 @@ sudo docker run armhf/hello-world
 
 # Wenn die Ausgabe OK ist, läuft der Knoten
 
+# Wenn bereits ein Cluster besteht, hängen wir uns rein
+k3s/clientneu.sh
 
+tail ~/client.log
+# Das nächste zum Anschauen, ob der Service läuft: Mit "q" beenden
+systemctl status k3s-agent.service

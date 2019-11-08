@@ -6,6 +6,9 @@ server() {
 	ssh bigengine <<EOF
 		echo start
 		set +x
+		sudo dphys-swapfile swapoff
+		sudo dphys-swapfile uninstall
+
 		echo Installation des Webservers
 		docker rm -f www
 		docker run -d -p 30001:80 --name www frickler24/phpngx
@@ -22,7 +25,6 @@ server() {
 		echo
 		echo Installieren des Cluster-Servers
 		(curl -sfL http://bigengine:30001 | sh -s - --write-kubeconfig-mode 644)
-		kubectl cordon bigengine
 EOF
 
 	echo Fertig mit dem Clusterserver.
@@ -43,6 +45,10 @@ clients() {
 
 server
 clients
+
+echo "Warte auf Erscheinen von BigEngine als ServerManager"
+sleep 30
+kubectl cordon bigengine
 
 echo && echo fertig.
 exit 0
