@@ -22,6 +22,7 @@ server() {
 		echo
 		echo Installieren des Cluster-Servers
 		(curl -sfL http://bigengine:30001 | sh -s - --write-kubeconfig-mode 644)
+		kubectl cordon bigengine
 EOF
 
 	echo Fertig mit dem Clusterserver.
@@ -31,12 +32,12 @@ EOF
 
 clients() {
 	echo "Starten der Worker auf den Clients"
-	for i in {1..21}
+	for i in $(nmap -sL 192.168.1.0/24 |grep Nmap | grep pi | cut -d" " -f 5 | cut -d"." -f 1 | sort)
 	do
-		echo Bearbeite pi$i
-		ssh pi$i mkdir -p ~pi/k3s
-		scp ~pi/k3s/clientneu.sh pi$i:k3s/clientneu.sh
-		ssh pi$i k3s/clientneu.sh &
+		echo Bearbeite Pi $i
+		ssh $i mkdir -p ~pi/k3s
+		scp ~pi/k3s/clientneu.sh $i:k3s/clientneu.sh
+		ssh $i k3s/clientneu.sh &
 	done
 }
 

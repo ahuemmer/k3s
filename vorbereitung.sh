@@ -7,15 +7,11 @@ ssh -X pi1 geany vorbereitung.sh
 
 # und hier geht es nun los
 
-# Vorbereitungsscript für Raspis 3 / 3B+
-# Zunächst die normale NOOBS-Prozedur durchlaufen
-# Anschließend den Linux-Patchday durchführen:
-
-sudo apt update && sudo apt upgrade -y
-
 # Kopieren der wichtigsten Dinge
 # Der Quellrechner
 QUELLE=pi1
+
+# Die Keys zum Remote login auf die Raspis ohne Passwort
 scp -r ${QUELLE}:.ssh .
 
 # Vor den nächsten Zeilen abwarten, 
@@ -30,6 +26,16 @@ scp ${QUELLE}:.toprc .
 yes | ssh pi1 echo ok
 yes | ssh bigengine echo ok
 
+
+# Vorbereitungsscript für Raspis 3 / 3B+
+# Zunächst die normale NOOBS-Prozedur durchlaufen
+# Anschließend den Linux-Patchday durchführen:
+sudo dphys-swapfile swapoff
+sudo dphys-swapfile uninstall
+sudo apt update && sudo apt upgrade -y
+reboot
+
+# Vor den nächsten Zeilen abwarten wegen reboots
 # Installation Docker
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
 echo "deb [arch=armhf] https://download.docker.com/linux/debian \
