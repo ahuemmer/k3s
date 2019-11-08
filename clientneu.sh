@@ -17,7 +17,7 @@ clients() {
 	[[ -x /usr/local/bin/k3s-uninstall.sh ]] && k3s-uninstall.sh
 	docker rm -f $(docker ps -aq) 2>/dev/null
 
-	export K3S_URL=https://192.168.1.11:6443
+	export K3S_URL=https://192.168.1.12:6443
 	export K3S_TOKEN=$(ssh bigengine sudo cat /var/lib/rancher/k3s/server/node-token)
 	set | grep K3S
 	curl -sfL http://bigengine:30001 | sh -s - --docker

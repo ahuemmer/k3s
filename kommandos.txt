@@ -37,7 +37,7 @@ kubectl cordon MASCHINENNAME
 # Die folgenden drei Zeilen (um das Token ergänzt) auf der Webseite eintragen,
 # damit die Kollegen das kopieren können:
 
-export K3S_URL=https://192.168.1.11:6443
+export K3S_URL=https://192.168.1.12:6443
 # export K3S_TOKEN=HIER_KOMMT_DAS_TOKEN_HIN_IN_DIE_NÄCHSTE_ZEILE
 export K3S_TOKEN=K10492c0a4b53b2bada254e286ca22da67c3ed8fdaa4d529455d1c0a6102c80dbb9::node:351b7c7ba17ae19dcbbb8fdbd7278694
 
