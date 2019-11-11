@@ -23,5 +23,5 @@ clients() {
 	curl -sfL http://bigengine:30001 | sh -s - --docker
 }
 
-clients > ~/client.log 2>&1
+clients | tee ~/client.log 2>&1
 

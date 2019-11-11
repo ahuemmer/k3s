@@ -34,12 +34,12 @@ EOF
 
 clients() {
 	echo "Starten der Worker auf den Clients"
-	for i in $(nmap -sL 192.168.1.0/24 |grep Nmap | grep pi | cut -d" " -f 5 | cut -d"." -f 1 | sort)
+	for i in $(nmap -sL 192.168.1.0/24 |grep Nmap | grep pi | cut -d" " -f 5 | cut -d"." -f 1 | sort -u)
 	do
 		echo Bearbeite Pi $i
-		ssh $i mkdir -p ~pi/k3s
-		scp ~pi/k3s/clientneu.sh $i:k3s/clientneu.sh
-		ssh $i k3s/clientneu.sh &
+		ssh $i -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no mkdir -p ~pi/k3s
+		scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ~pi/k3s/clientneu.sh $i:k3s/clientneu.sh
+		ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $i k3s/clientneu.sh &
 	done
 }
 
@@ -50,5 +50,6 @@ echo "Warte auf Erscheinen von BigEngine als ServerManager"
 sleep 30
 kubectl cordon bigengine
 
+if [[ -x $1 ]]; then zeigeDockerContainer.sh; fi
 echo && echo fertig.
 exit 0
