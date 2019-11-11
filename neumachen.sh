@@ -44,7 +44,7 @@ clients() {
 }
 
 server
-clients
+clients | tee /tmp/logfile.txt
 
 echo "Warte auf Erscheinen von BigEngine als ServerManager"
 sleep 30
