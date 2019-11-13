@@ -2,7 +2,7 @@
 apiVersion: apps/v1 
 kind: Deployment
 metadata:
-  name: av-client-deployment
+  name: av-client-deployment-%UNIQUENAME%
 spec:
   replicas: 1
   selector:
@@ -23,6 +23,6 @@ spec:
         #- name: PORT
         #  value: "30000"
         - name: TEAM
-          value: "A"
+          value: "%TEAMNAME%"
         - name: MEMBER
-          value: "Fritz"
+          value: "%SPIELERNAME%"
