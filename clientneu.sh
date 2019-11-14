@@ -22,7 +22,7 @@ clients() {
 	export K3S_URL=https://${MASTER_IP}:6443
 	export K3S_TOKEN=$(ssh ${MASTER_IP} sudo cat /var/lib/rancher/k3s/server/node-token)
   ssh ${MASTER_IP} cat /etc/rancher/k3s/k3s.yaml | sed "s/127\.0\.0\.1/${MASTER_IP}/g" > ~/.kube/config
-  curl -sfL http://${MASTER_IP}:30001 | sh -s - --docker
+  curl -sfL http://${MASTER_IP}:42001 | sh -s - --docker
 }
 
 clients | tee ~/client.log 2>&1
