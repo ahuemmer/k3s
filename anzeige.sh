@@ -1,6 +1,7 @@
 #!/bin/bash
 
-echo "Anzeige der Knoten im Cluster (kubectl get node -o wide)"
+echo -n "Anzeige der Knoten im Cluster (kubectl get node -o wide), "
+echo "insgesamt $(kubectl get node -o wide | grep pi | sort -u | wc -l) Knoten exkl. BigEngine erkannt"
 kubectl get node -o wide | sort
 
 echo

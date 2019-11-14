@@ -11,7 +11,7 @@ server() {
 
 		echo Installation des Webservers
 		docker rm -f www
-		docker run -d -p 30001:80 --name www frickler24/phpngx
+		docker run -d -p 42001:80 --name www frickler24/phpngx
 		docker cp ~/k3s/www www:/var/.
 		echo Container sollte nun laufen.
 
@@ -24,7 +24,7 @@ server() {
 
 		echo
 		echo Installieren des Cluster-Servers
-		(curl -sfL http://bigengine:30001 | sh -s - --write-kubeconfig-mode 644)
+		(curl -sfL http://bigengine:42001 | sh -s - --write-kubeconfig-mode 644)
 EOF
 
 	echo Fertig mit dem Clusterserver.

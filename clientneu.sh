@@ -5,24 +5,31 @@ set +e
 MASTER_IP=192.168.1.12
 
 clients() {
-  echo "Starten der Worker auf den Clients"
-  set +x
-  sudo dphys-swapfile swapoff
-  sudo dphys-swapfile uninstall
+	echo "Starten der Worker auf den Clients"
 
-  if [[ -x /usr/local/bin/k3s-agent-uninstall.sh ]]; then
-    k3s-agent-uninstall.sh
-  else
-    echo Kein k3s-agent-uninstall.sh gefunden
-  fi
-  # nur zur Sicherheit...
-  [[ -x /usr/local/bin/k3s-uninstall.sh ]] && k3s-uninstall.sh
-  docker rm -f $(docker ps -aq) 2>/dev/null
+  echo -n "  - Räume auf... "
+  ./clientaufraeumen.sh >/dev/null && echo "OK"
 
-  export K3S_URL=https://${MASTER_IP}:6443
-  export K3S_TOKEN=$(ssh ${MASTER_IP} sudo cat /var/lib/rancher/k3s/server/node-token)
+  echo -n "  - Hole K3S-Token... "
+  token=$(ssh ${MASTER_IP} sudo cat /var/lib/rancher/k3s/server/node-token) && echo "OK"
+
+  echo "  - Exportiere Variablen:"
+  echo -n "    - K3S_URL=https://${MASTER_IP}:6443 "
+	export K3S_URL=https://${MASTER_IP}:6443 && echo " - OK"
+
+  echo -n "    - K3S_TOKEN=${token} "
+	export K3S_TOKEN=${token} && echo " - OK"
+
+  echo -n "  - Lade kubeconfig... "
+  mkdir -p ~/.kube
   ssh ${MASTER_IP} cat /etc/rancher/k3s/k3s.yaml | sed "s/127\.0\.0\.1/${MASTER_IP}/g" > ~/.kube/config
-  curl -sfL http://${MASTER_IP}:30001 | sh -s - --docker
+  echo "OK"
+
+  echo -n "  - Initialisiere K3S... "
+  curl -sfL http://${MASTER_IP}:42001 | sh -s - --docker >/dev/null 2>&1
+  echo "OK"
+
+  echo "Fertig :-)"
 }
 
 clients | tee ~/client.log 2>&1
